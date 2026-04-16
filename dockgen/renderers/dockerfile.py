@@ -64,6 +64,13 @@ def _build(a):
         L.append("    && echo '[ -f /workspace/install/setup.bash ] && source /workspace/install/setup.bash' >> /home/$USERNAME/.bashrc")
         L.append("")
 
+    user_ws = a.get("user_workspace") or ""
+    workdir = f"/home/{user}/{user_ws}" if user_ws else "/workspace"
+    if user_ws:
+        L.append(f"RUN mkdir -p {workdir} \\")
+        L.append(f"    && chown $USERNAME:$USERNAME {workdir}")
+        L.append("")
+
     L.append("USER $USERNAME")
-    L.append("WORKDIR /workspace")
+    L.append(f"WORKDIR {workdir}")
     return "\n".join(L) + "\n"

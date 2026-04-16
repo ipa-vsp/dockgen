@@ -192,11 +192,23 @@ def _step_3b_dockerfile(a, d):
         a["dev_user"] = d.get("dev_user", "")
         a["apt_packages"] = d.get("apt_packages", [])
         a["pip_packages"] = d.get("pip_packages", [])
+        a["user_workspace"] = d.get("user_workspace", "")
         return
     a["dockerfile"] = "custom"
     a["dev_user"] = _ask("Non-root user name?", default=d.get("dev_user") or "dev")
     a["apt_packages"] = _ask_list("Extra apt packages", d.get("apt_packages", []))
     a["pip_packages"] = _ask_list("Pip packages", d.get("pip_packages", []))
+    create_ws = _ask_bool(
+        f"Create a workspace folder inside /home/{a['dev_user']}?",
+        default=d.get("user_workspace") is not None,
+    )
+    if create_ws:
+        a["user_workspace"] = _ask(
+            "Workspace folder name?",
+            default=d.get("user_workspace") or "ws",
+        )
+    else:
+        a["user_workspace"] = ""
 
 
 def _step_4a_gpu(a, d):
@@ -264,8 +276,12 @@ def _step_5_user_env(a, d):
 def _step_6_volumes(a, d):
     _section("Volumes")
     cwd = os.getcwd()
+    user = a.get("dev_user") or "dev"
+    user_ws = a.get("user_workspace") or ""
+    container_mount = f"/home/{user}/{user_ws}" if user_ws else "/workspace"
+    a["container_mount"] = d.get("container_mount", container_mount)
     a["workspace_mount"] = _ask_bool(
-        f"Mount current directory ({cwd}) into /workspace?",
+        f"Mount current directory ({cwd}) into {a['container_mount']}?",
         default=d.get("workspace_mount", True),
     )
     a["extra_mounts"] = _ask_list(

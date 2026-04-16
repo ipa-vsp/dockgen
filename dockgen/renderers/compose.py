@@ -126,7 +126,8 @@ def _compose_env(a):
 def _compose_volumes(a):
     vols = []
     if a.get("workspace_mount"):
-        vols.append(f"{os.getcwd()}:/workspace")
+        mount_target = a.get("container_mount") or "/workspace"
+        vols.append(f"{os.getcwd()}:{mount_target}")
     if a.get("display") == "x11":
         vols.append("/tmp/.X11-unix:/tmp/.X11-unix:rw")
     elif a.get("display") == "wayland":
