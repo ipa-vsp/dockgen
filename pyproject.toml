@@ -7,12 +7,12 @@ name = "dockgen"
 version = "0.1.0"
 description = "Docker Compose and devcontainer generator for ROS and general development"
 readme = "README.md"
-license = { text = "MIT" }
-authors = [{ name = "ipa-vsp", email = "prachandabhanu@gmail.com" }]
+license = { text = "Apache-2.0" }
+authors = [{ name = "Vishnuprasad Prachandabhanu", email = "vishnu.pbhat93@gmail.com" }]
 keywords = ["docker", "ros", "devcontainer", "compose", "generator"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: POSIX :: Linux",
 ]
 requires-python = ">=3.8"
