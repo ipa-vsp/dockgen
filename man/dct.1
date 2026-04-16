@@ -1,0 +1,157 @@
+.TH DCT 1 "2026-04" "dct 0.1.0" "Docker Container Tool"
+.
+.SH NAME
+dct \- Docker Container Tool for ROS and general development
+.
+.SH SYNOPSIS
+.B dct
+.RB [ \-w
+.IR workspace ]
+.I command
+.RI [ args ]
+.
+.SH DESCRIPTION
+.B dct
+is an interactive wizard that generates Docker Compose and VS\~Code
+devcontainer configurations for ROS and general development environments.
+Answers are persisted in
+.I .dct.json
+so that
+.B dct\~config
+can re-run with your previous choices as defaults, and
+.B dct\~add
+can patch a single field without touching the rest.
+.
+.SH COMMANDS
+.TP
+.B new
+Run the full nine-step wizard from scratch and write output files.
+Pass
+.B \-\-force
+to overwrite an existing
+.IR .dct.json .
+.
+.TP
+.B config
+Re-run the wizard over an existing
+.I .dct.json
+, using previous answers as defaults.
+.
+.TP
+.BI "add " feature " [" value ]
+Surgically add a single feature without re-running the full wizard.
+Supported features:
+.RS
+.TP
+.B gpu
+Probe for NVIDIA/AMD GPUs and update the GPU runtime setting.
+.TP
+.B display
+Probe for X11/Wayland display and update the GUI forwarding setting.
+.TP
+.B volume
+Append a bind mount.
+.I value
+must be
+.IR HOST : CONTAINER
+(e.g.\&
+.BR /data:/data ).
+If omitted, prompts interactively.
+.RE
+.
+.TP
+.B validate
+Check that generated files exist and are syntactically valid.
+Runs
+.B docker\~compose\~config
+when
+.B docker
+is on
+.BR PATH .
+.
+.TP
+.B info
+Print the current
+.I .dct.json
+as formatted JSON.
+.
+.SH OPTIONS
+.TP
+.BR \-w ", " \-\-workspace " " \fIdir\fR
+Target workspace directory (default: current directory).
+All paths are resolved relative to this directory.
+.
+.SH FILES
+.TP
+.I .dct.json
+Source-of-truth configuration. Re-generate all output files by running
+.BR "dct config" .
+.TP
+.I docker/compose.yml
+Generated Docker Compose service definition.
+.TP
+.I docker/.env
+.BR UID " and " GID
+values for Compose variable interpolation.
+.TP
+.I docker/Dockerfile
+Generated Dockerfile (only when \(lqcustom Dockerfile\(rq is chosen in the wizard).
+.TP
+.I .devcontainer/devcontainer.json
+Generated VS\~Code devcontainer configuration.
+.TP
+.I .devcontainer/Dockerfile
+Devcontainer Dockerfile (when both output modes are selected).
+.
+.SH ENVIRONMENT
+.TP
+.B DISPLAY
+If set, the wizard defaults GUI forwarding to
+.BR x11 .
+.TP
+.B WAYLAND_DISPLAY
+If set, the wizard defaults GUI forwarding to
+.BR wayland
+(takes priority over
+.BR DISPLAY ).
+.
+.SH EXAMPLES
+Generate a ROS\~2 Humble workspace with host networking and Wayland:
+.PP
+.RS
+.nf
+dct new
+# choose: ros_distro=humble, display=wayland, network=host
+.fi
+.RE
+.PP
+Add an NVIDIA GPU to an existing configuration:
+.PP
+.RS
+.nf
+dct add gpu
+.fi
+.RE
+.PP
+Mount a dataset directory:
+.PP
+.RS
+.nf
+dct add volume /datasets:/datasets:ro
+.fi
+.RE
+.PP
+Validate after editing compose.yml by hand:
+.PP
+.RS
+.nf
+dct validate
+.fi
+.RE
+.
+.SH SEE ALSO
+.BR docker (1),
+.BR docker-compose (1)
+.
+.SH BUGS
+Report issues at the project repository.
