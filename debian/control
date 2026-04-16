@@ -1,0 +1,17 @@
+Source: dockgen
+Section: python
+Priority: optional
+Maintainer: Vishnuprasad Prachandabhanu <vishnu.pbhat93@gmail.com>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools
+Standards-Version: 4.6.2
+Homepage: https://github.com/ipa-vsp/dockgen
+Rules-Requires-Root: no
+
+Package: python3-dockgen
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}
+Description: Docker Compose and devcontainer generator for ROS and general development
+ dockgen is a CLI tool that generates Docker Compose files and devcontainer
+ configurations for ROS and general development environments. It provides an
+ interactive wizard to configure GPU passthrough, display forwarding, network
+ settings, volumes, and more.
