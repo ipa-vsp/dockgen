@@ -1,0 +1,9 @@
+tar-ignore = .venv
+tar-ignore = .vscode
+tar-ignore = dist
+tar-ignore = dockgen.egg-info
+tar-ignore = __pycache__
+tar-ignore = *.pyc
+tar-ignore = dct_architecture_plan.svg
+tar-ignore = todo
+tar-ignore = .git

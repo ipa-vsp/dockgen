@@ -1,5 +1,11 @@
-dockgen (0.1.0-1) noble; urgency=medium
+dockgen (0.1.1) noble; urgency=medium
+
+  * Fix build: add pybuild-plugin-pyproject to Build-Depends for pyproject.toml support.
+
+ -- prachanda <vishnu.pbhat93@gmail.com>  Thu, 16 Apr 2026 10:30:00 +0000
+
+dockgen (0.1.0) noble; urgency=medium
 
   * Initial release.
 
- -- Vishnuprasad Prachandabhanu <vishnu.pbhat93@gmail.com>  Wed, 16 Apr 2026 00:00:00 +0000
+ -- prachanda <vishnu.pbhat93@gmail.com>  Wed, 16 Apr 2026 00:00:00 +0000

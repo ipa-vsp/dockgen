@@ -1,8 +1,8 @@
 Source: dockgen
 Section: python
 Priority: optional
-Maintainer: Vishnuprasad Prachandabhanu <vishnu.pbhat93@gmail.com>
-Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools
+Maintainer: prachanda <vishnu.pbhat93@gmail.com>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools, pybuild-plugin-pyproject
 Standards-Version: 4.6.2
 Homepage: https://github.com/ipa-vsp/dockgen
 Rules-Requires-Root: no
