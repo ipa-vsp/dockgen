@@ -29,8 +29,6 @@ def _build(a):
             "context": ".",
             "args": {
                 "USERNAME": a.get("dev_user") or "dev",
-                "USER_UID": "${localEnv:UID}",
-                "USER_GID": "${localEnv:GID}",
             },
         }
     else:
@@ -89,8 +87,9 @@ def _build(a):
         cfg["mounts"] = mounts
 
     if a.get("workspace_mount"):
-        cfg["workspaceMount"] = "source=${localWorkspaceFolder},target=/workspace,type=bind"
-        cfg["workspaceFolder"] = "/workspace"
+        target = a.get("container_mount") or "/workspace"
+        cfg["workspaceMount"] = f"source=${{localWorkspaceFolder}},target={target},type=bind"
+        cfg["workspaceFolder"] = target
 
     if a.get("vscode_extensions"):
         cfg["customizations"] = {
@@ -99,6 +98,8 @@ def _build(a):
 
     if a.get("dockerfile") == "custom" and a.get("dev_user"):
         cfg["remoteUser"] = a["dev_user"]
+        if a.get("passthrough_uid", True):
+            cfg["updateRemoteUserUID"] = True
 
     if a.get("post_create"):
         cfg["postCreateCommand"] = a["post_create"]

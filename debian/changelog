@@ -1,3 +1,18 @@
+dockgen (0.1.3) noble; urgency=medium
+
+  * Add --version flag to CLI.
+  * Add colorized terminal output for wizard prompts and CLI messages.
+
+ -- prachanda <vishnu.pbhat93@gmail.com>  Thu, 16 Apr 2026 16:25:02 +0200
+
+dockgen (0.1.2) noble; urgency=medium
+
+  * Add setup.py shim for broader pybuild compatibility.
+  * Drop pybuild-plugin-pyproject from Build-Depends; use python3-setuptools.
+  * Remove debian/files from version control; add generated paths to .gitignore.
+
+ -- prachanda <vishnu.pbhat93@gmail.com>  Wed, 16 Apr 2026 14:00:00 +0000
+
 dockgen (0.1.1) noble; urgency=medium
 
   * Fix build: add pybuild-plugin-pyproject to Build-Depends for pyproject.toml support.

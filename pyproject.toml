@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dockgen"
-version = "0.1.0"
+version = "0.1.3"
 description = "Docker Compose and devcontainer generator for ROS and general development"
 readme = "README.md"
 license = { text = "Apache-2.0" }

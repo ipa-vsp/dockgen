@@ -31,6 +31,15 @@ without touching the rest.
 
 ## Installation
 
+```bash
+sudo apt-add-repository ppa:prachanda/dockgen
+sudo apt update
+sudo apt install python3-dockgen
+#or
+wget "https://launchpad.net/~prachanda/+archive/ubuntu/dockgen/+build/32773446/+files/buildlog_ubuntu-noble-amd64.dockgen_0.1.0_BUILDING.txt.gz"
+zcat buildlog_ubuntu-noble-amd64.dockgen_0.1.0_BUILDING.txt.gz | tail -100
+``` 
+
 ### Option A — pipx (recommended on Ubuntu 22.04 / 24.04)
 
 ```bash

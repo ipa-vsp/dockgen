@@ -2,6 +2,7 @@ import os
 import sys
 from pathlib import Path
 
+from dockgen import colors
 from dockgen.probes import display as display_probe
 from dockgen.probes import gpu as gpu_probe
 from dockgen.probes import vscode as vscode_probe
@@ -26,7 +27,7 @@ def run(defaults=None):
         _step_8_devcontainer(a, d)
         _step_9_advanced(a, d)
     except (KeyboardInterrupt, EOFError):
-        print("\naborted.", file=sys.stderr)
+        print(colors.warn("\naborted."), file=sys.stderr)
         sys.exit(130)
     return a
 
@@ -34,32 +35,32 @@ def run(defaults=None):
 # ---------- helpers ----------
 
 def _section(title):
-    print(f"\n── {title} ──")
+    print(f"\n{colors.header(f'── {title} ──')}")
 
 
 def _ask(prompt, default=None, choices=None):
     hint = ""
     if choices:
-        hint = f" [{'/'.join(choices)}]"
+        hint = f" {colors.dim('[' + '/'.join(choices) + ']')}"
     if default is not None and default != "":
-        hint += f" ({default})"
+        hint += f" {colors.dim('(' + str(default) + ')')}"
     while True:
-        raw = input(f"  {prompt}{hint}: ").strip()
+        raw = input(f"  {colors.cyan(prompt)}{hint}: ").strip()
         if not raw:
             if default is not None:
                 return default
-            print("    (required)")
+            print(f"    {colors.yellow('(required)')}")
             continue
         if choices and raw not in choices:
-            print(f"    choose from: {', '.join(choices)}")
+            print(f"    {colors.yellow('choose from: ' + ', '.join(choices))}")
             continue
         return raw
 
 
 def _ask_bool(prompt, default=False):
-    hint = "Y/n" if default else "y/N"
+    hint = colors.dim("Y/n") if default else colors.dim("y/N")
     while True:
-        raw = input(f"  {prompt} [{hint}]: ").strip().lower()
+        raw = input(f"  {colors.cyan(prompt)} [{hint}]: ").strip().lower()
         if not raw:
             return default
         if raw in ("y", "yes"):
@@ -69,16 +70,16 @@ def _ask_bool(prompt, default=False):
 
 
 def _ask_kv(prompt, existing):
-    print(f"  {prompt} (KEY=VALUE, blank to finish)")
+    print(f"  {colors.cyan(prompt)} {colors.dim('(KEY=VALUE, blank to finish)')}")
     for k, v in existing.items():
-        print(f"    • {k}={v}")
+        print(f"    {colors.dim('•')} {k}={v}")
     result = dict(existing)
     while True:
-        raw = input("    + ").strip()
+        raw = input(f"    {colors.dim('+')} ").strip()
         if not raw:
             break
         if "=" not in raw:
-            print("      expected KEY=VALUE")
+            print(f"      {colors.yellow('expected KEY=VALUE')}")
             continue
         k, v = raw.split("=", 1)
         result[k.strip()] = v.strip()
@@ -86,12 +87,12 @@ def _ask_kv(prompt, existing):
 
 
 def _ask_list(prompt, existing):
-    print(f"  {prompt} (one per line, blank to finish)")
+    print(f"  {colors.cyan(prompt)} {colors.dim('(one per line, blank to finish)')}")
     for item in existing:
-        print(f"    • {item}")
+        print(f"    {colors.dim('•')} {item}")
     result = list(existing)
     while True:
-        raw = input("    + ").strip()
+        raw = input(f"    {colors.dim('+')} ").strip()
         if not raw:
             break
         result.append(raw)
@@ -102,15 +103,14 @@ def _ask_select(prompt, items, default_selected=None):
     if not items:
         return list(default_selected or [])
     selected = set(default_selected or [])
-    print(f"  {prompt}")
+    print(f"  {colors.cyan(prompt)}")
     for i, item in enumerate(items, 1):
-        mark = "*" if item in selected else " "
+        mark = colors.green("*") if item in selected else " "
         print(f"    [{mark}] {i:>2}. {item}")
     print(
-        "    (comma-separated numbers to toggle, 'all', 'none',"
-        " or blank to keep current)"
+        f"    {colors.dim('(comma-separated numbers to toggle, ' + repr('all') + ', ' + repr('none') + ', or blank to keep current)')}"
     )
-    raw = input("    > ").strip().lower()
+    raw = input(f"    {colors.dim('>')} ").strip().lower()
     if not raw:
         return sorted(selected)
     if raw == "all":
@@ -215,9 +215,9 @@ def _step_4a_gpu(a, d):
     _section("GPU")
     detected = gpu_probe.detect()
     if detected == "none":
-        print("  no GPU tooling detected (nvidia-smi / rocm-smi)")
+        print(f"  {colors.dim('no GPU tooling detected (nvidia-smi / rocm-smi)')}")
     else:
-        print(f"  detected: {detected}")
+        print(f"  {colors.green('detected:')} {detected}")
     a["gpu"] = _ask(
         "GPU runtime?",
         default=d.get("gpu", detected),
@@ -229,9 +229,9 @@ def _step_4b_display(a, d):
     _section("Display / GUI")
     detected = display_probe.detect()
     if detected == "none":
-        print("  no DISPLAY or WAYLAND_DISPLAY in the environment")
+        print(f"  {colors.dim('no DISPLAY or WAYLAND_DISPLAY in the environment')}")
     else:
-        print(f"  detected: {detected}")
+        print(f"  {colors.green('detected:')} {detected}")
     display_default = d.get("display") or (detected if detected != "none" else "x11")
     a["display"] = _ask(
         "GUI forwarding?",
@@ -239,13 +239,13 @@ def _step_4b_display(a, d):
         choices=["none", "x11", "wayland", "vnc"],
     )
     if a["display"] == "vnc":
-        print("  note: VNC sidecar rendering is planned; compose will omit it for now.")
+        print(f"  {colors.yellow('note:')} VNC sidecar rendering is planned; compose will omit it for now.")
 
 
 def _step_4c_network(a, d):
     _section("Network")
     if a["ros_distro"] != "none":
-        print("  note: ROS 2 DDS discovery usually needs host networking.")
+        print(f"  {colors.yellow('note:')} ROS 2 DDS discovery usually needs host networking.")
         net_default = d.get("network", "host")
     else:
         net_default = d.get("network", "bridge")
@@ -308,14 +308,14 @@ def _step_8_devcontainer(a, d):
     installed = vscode_probe.list_installed()
     prior = d.get("vscode_extensions", [])
     if installed:
-        print(f"  ({len(installed)} extensions found in ~/.vscode/extensions)")
+        print(f"  {colors.dim(f'({len(installed)} extensions found in ~/.vscode/extensions)')}")
         a["vscode_extensions"] = _ask_select(
             "Select VSCode extensions to include",
             installed,
             default_selected=prior,
         )
     else:
-        print("  no local VSCode extensions found; enter manually")
+        print(f"  {colors.dim('no local VSCode extensions found; enter manually')}")
         a["vscode_extensions"] = _ask_list(
             "VSCode extensions (e.g. ms-python.python)",
             prior,

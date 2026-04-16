@@ -4,7 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from dockgen import config, wizard
+from dockgen import colors, config, wizard
+from dockgen import __version__
 from dockgen.renderers import compose, devcontainer
 
 
@@ -12,8 +13,10 @@ def cmd_new(args):
     existing = config.load(args.workspace)
     if existing and not args.force:
         print(
-            f"error: {args.workspace}/.dockgen.json already exists. "
-            "Use 'dockgen config' or pass --force.",
+            colors.error(
+                f"error: {args.workspace}/.dockgen.json already exists. "
+                "Use 'dockgen config' or pass --force."
+            ),
             file=sys.stderr,
         )
         return 1
@@ -25,7 +28,7 @@ def cmd_config(args):
     existing = config.load(args.workspace)
     if not existing:
         print(
-            f"no .dockgen.json in {args.workspace}. Run 'dockgen new'. first.",
+            colors.error(f"no .dockgen.json in {args.workspace}. Run 'dockgen new' first."),
             file=sys.stderr,
         )
         return 1
@@ -36,7 +39,7 @@ def cmd_config(args):
 def cmd_add(args):
     existing = config.load(args.workspace)
     if not existing:
-        print(f"no .dockgen.json in {args.workspace}. Run 'dockgen new'. first.", file=sys.stderr)
+        print(colors.error(f"no .dockgen.json in {args.workspace}. Run 'dockgen new' first."), file=sys.stderr)
         return 1
 
     feature = args.feature
@@ -49,14 +52,14 @@ def cmd_add(args):
     }
     if feature not in handlers:
         print(
-            f"unknown feature '{feature}'. supported: {', '.join(handlers)}",
+            colors.error(f"unknown feature '{feature}'. supported: {', '.join(handlers)}"),
             file=sys.stderr,
         )
         return 1
     try:
         return handlers[feature](existing, args.workspace, value)
     except (KeyboardInterrupt, EOFError):
-        print("\naborted.", file=sys.stderr)
+        print(colors.warn("\naborted."), file=sys.stderr)
         return 130
 
 
@@ -95,7 +98,7 @@ def cmd_validate(args):
     ws = Path(args.workspace)
     cfg = config.load(args.workspace)
     if not cfg:
-        print(f"no .dockgen.json in {args.workspace}.", file=sys.stderr)
+        print(colors.error(f"no .dockgen.json in {args.workspace}."), file=sys.stderr)
         return 1
 
     errors = []
@@ -119,13 +122,13 @@ def cmd_validate(args):
             _validate_json(dc_path, errors)
 
     for w in warnings:
-        print(f"  warn:  {w}")
+        print(f"  {colors.yellow('warn:')}  {w}")
     for e in errors:
-        print(f"  error: {e}", file=sys.stderr)
+        print(f"  {colors.error('error:')} {e}", file=sys.stderr)
 
     if errors:
         return 1
-    print("validate: OK")
+    print(colors.success("validate: OK"))
     return 0
 
 
@@ -173,7 +176,7 @@ def _which(cmd):
 def cmd_info(args):
     existing = config.load(args.workspace)
     if not existing:
-        print(f"no .dockgen.json in {args.workspace}.", file=sys.stderr)
+        print(colors.error(f"no .dockgen.json in {args.workspace}."), file=sys.stderr)
         return 1
     print(json.dumps(existing, indent=2, sort_keys=True))
     return 0
@@ -187,9 +190,9 @@ def _apply(answers, workspace):
         written.extend(compose.render(answers, workspace))
     if answers["output_format"] in ("devcontainer", "both"):
         written.extend(devcontainer.render(answers, workspace))
-    print("wrote:")
+    print(colors.success("wrote:"))
     for p in written:
-        print(f"  {p}")
+        print(f"  {colors.cyan(str(p))}")
     return 0
 
 
@@ -197,6 +200,9 @@ def main():
     p = argparse.ArgumentParser(prog="dockgen", description="Docker Container Tool")
     p.add_argument(
         "-w", "--workspace", default=".", help="target workspace (default: cwd)"
+    )
+    p.add_argument(
+        "--version", action="version", version=f"dockgen {__version__}"
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
