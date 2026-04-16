@@ -4,16 +4,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-from dct import config, wizard
-from dct.renderers import compose, devcontainer
+from dockgen import config, wizard
+from dockgen.renderers import compose, devcontainer
 
 
 def cmd_new(args):
     existing = config.load(args.workspace)
     if existing and not args.force:
         print(
-            f"error: {args.workspace}/.dct.json already exists. "
-            "Use 'dct config' or pass --force.",
+            f"error: {args.workspace}/.dockgen.json already exists. "
+            "Use 'dockgen config' or pass --force.",
             file=sys.stderr,
         )
         return 1
@@ -25,7 +25,7 @@ def cmd_config(args):
     existing = config.load(args.workspace)
     if not existing:
         print(
-            f"no .dct.json in {args.workspace}. Run 'dct new' first.",
+            f"no .dockgen.json in {args.workspace}. Run 'dockgen new'. first.",
             file=sys.stderr,
         )
         return 1
@@ -36,7 +36,7 @@ def cmd_config(args):
 def cmd_add(args):
     existing = config.load(args.workspace)
     if not existing:
-        print(f"no .dct.json in {args.workspace}. Run 'dct new' first.", file=sys.stderr)
+        print(f"no .dockgen.json in {args.workspace}. Run 'dockgen new'. first.", file=sys.stderr)
         return 1
 
     feature = args.feature
@@ -95,7 +95,7 @@ def cmd_validate(args):
     ws = Path(args.workspace)
     cfg = config.load(args.workspace)
     if not cfg:
-        print(f"no .dct.json in {args.workspace}.", file=sys.stderr)
+        print(f"no .dockgen.json in {args.workspace}.", file=sys.stderr)
         return 1
 
     errors = []
@@ -106,7 +106,7 @@ def cmd_validate(args):
     if output in ("compose", "both"):
         compose_path = ws / "docker" / "compose.yml"
         if not compose_path.exists():
-            errors.append(f"missing {compose_path} — run 'dct new' or 'dct config'")
+            errors.append(f"missing {compose_path} — run 'dockgen new' or 'dockgen config'")
         else:
             _validate_yaml(compose_path, errors)
             _validate_compose(compose_path, ws / "docker", warnings, errors)
@@ -114,7 +114,7 @@ def cmd_validate(args):
     if output in ("devcontainer", "both"):
         dc_path = ws / ".devcontainer" / "devcontainer.json"
         if not dc_path.exists():
-            errors.append(f"missing {dc_path} — run 'dct new' or 'dct config'")
+            errors.append(f"missing {dc_path} — run 'dockgen new' or 'dockgen config'")
         else:
             _validate_json(dc_path, errors)
 
@@ -173,7 +173,7 @@ def _which(cmd):
 def cmd_info(args):
     existing = config.load(args.workspace)
     if not existing:
-        print(f"no .dct.json in {args.workspace}.", file=sys.stderr)
+        print(f"no .dockgen.json in {args.workspace}.", file=sys.stderr)
         return 1
     print(json.dumps(existing, indent=2, sort_keys=True))
     return 0
@@ -194,17 +194,17 @@ def _apply(answers, workspace):
 
 
 def main():
-    p = argparse.ArgumentParser(prog="dct", description="Docker Container Tool")
+    p = argparse.ArgumentParser(prog="dockgen", description="Docker Container Tool")
     p.add_argument(
         "-w", "--workspace", default=".", help="target workspace (default: cwd)"
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pn = sub.add_parser("new", help="generate a fresh config via the wizard")
-    pn.add_argument("--force", action="store_true", help="overwrite existing .dct.json")
+    pn.add_argument("--force", action="store_true", help="overwrite existing .dockgen.json")
     pn.set_defaults(func=cmd_new)
 
-    pc = sub.add_parser("config", help="reconfigure an existing .dct.json")
+    pc = sub.add_parser("config", help="reconfigure an existing .dockgen.json")
     pc.set_defaults(func=cmd_config)
 
     pa = sub.add_parser("add", help="surgically add a feature")

@@ -1,10 +1,10 @@
-# dct — Docker Container Tool
+# dockgen — Docker Generator
 
 An interactive wizard that generates Docker Compose and VS Code devcontainer
 configurations for ROS and general development environments.
 
-All answers are persisted in `.dct.json` so that `dct config` can re-run with
-your previous choices as defaults, and `dct add` can patch a single field
+All answers are persisted in `.dockgen.json` so that `dockgen config` can re-run with
+your previous choices as defaults, and `dockgen add` can patch a single field
 without touching the rest.
 
 ---
@@ -18,14 +18,14 @@ without touching the rest.
 - **VSCode extension scanner** — reads `~/.vscode/extensions` and presents a checklist
 - **Custom Dockerfile** — creates a non-root user matching your host UID/GID, installs dev tools
 - Outputs: `docker/compose.yml`, `docker/Dockerfile`, `.devcontainer/devcontainer.json`
-- Surgical `dct add gpu|display|volume` — patch one thing, regenerate everything
+- Surgical `dockgen add gpu|display|volume` — patch one thing, regenerate everything
 
 ---
 
 ## Requirements
 
 - Python 3.8+
-- Docker (for `dct validate` dry-run; not required for file generation)
+- Docker (for `dockgen validate` dry-run; not required for file generation)
 
 ---
 
@@ -37,16 +37,16 @@ without touching the rest.
 sudo apt install pipx          # if not already installed
 pipx ensurepath
 
-git clone <repo-url> ~/dct
-cd ~/dct
+git clone <repo-url> ~/dockgen
+cd ~/dockgen
 bash install.sh                # detects pipx automatically
 ```
 
 ### Option B — pip user install
 
 ```bash
-git clone <repo-url> ~/dct
-cd ~/dct
+git clone <repo-url> ~/dockgen
+cd ~/dockgen
 pip install --user .
 ```
 
@@ -60,14 +60,14 @@ pip install --user --break-system-packages .
 ### Option C — system-wide (requires sudo)
 
 ```bash
-cd ~/dct
+cd ~/dockgen
 sudo bash install.sh --system
 ```
 
 ### Option D — editable / dev mode (source stays linked)
 
 ```bash
-cd ~/dct
+cd ~/dockgen
 bash install.sh --editable
 # or manually:
 pip install --user --break-system-packages -e .
@@ -79,8 +79,8 @@ pip install --user --break-system-packages -e .
 
 | File | Destination |
 |------|-------------|
-| Bash completion | `~/.local/share/bash-completion/completions/dct` |
-| Man page | `~/.local/share/man/man1/dct.1.gz` |
+| Bash completion | `~/.local/share/bash-completion/completions/dockgen` |
+| Man page | `~/.local/share/man/man1/dockgen.1.gz` |
 
 If `~/.local/bin` is not in your `PATH`:
 
@@ -92,7 +92,7 @@ source ~/.bashrc
 Enable tab completion in the current shell:
 
 ```bash
-source ~/.local/share/bash-completion/completions/dct
+source ~/.local/share/bash-completion/completions/dockgen
 ```
 
 Or add it to `~/.bashrc` to load automatically on every login.
@@ -103,7 +103,7 @@ Or add it to `~/.bashrc` to load automatically on every login.
 
 ```bash
 cd ~/ros_ws/my_project
-dct new
+dockgen new
 ```
 
 The wizard walks through nine steps:
@@ -127,7 +127,7 @@ Generated files:
 
 ```
 my_project/
-├── .dct.json                   # source of truth — edit and run dct config to regenerate
+├── .dockgen.json                   # source of truth — edit and run dockgen config to regenerate
 ├── docker/
 │   ├── compose.yml
 │   ├── .env                    # UID/GID for compose variable interpolation
@@ -142,19 +142,19 @@ my_project/
 ## Usage
 
 ```
-dct [-w WORKSPACE] COMMAND [args]
+dockgen [-w WORKSPACE] COMMAND [args]
 ```
 
 | Command | Description |
 |---------|-------------|
-| `dct new` | Full wizard from scratch |
-| `dct new --force` | Overwrite an existing `.dct.json` |
-| `dct config` | Re-run wizard with previous answers as defaults |
-| `dct add gpu` | Probe GPU and patch config |
-| `dct add display` | Probe display and patch config |
-| `dct add volume HOST:CONTAINER` | Append a bind mount |
-| `dct validate` | Check files exist and run `docker compose config` |
-| `dct info` | Print current `.dct.json` as formatted JSON |
+| `dockgen new` | Full wizard from scratch |
+| `dockgen new --force` | Overwrite an existing `.dockgen.json` |
+| `dockgen config` | Re-run wizard with previous answers as defaults |
+| `dockgen add gpu` | Probe GPU and patch config |
+| `dockgen add display` | Probe display and patch config |
+| `dockgen add volume HOST:CONTAINER` | Append a bind mount |
+| `dockgen validate` | Check files exist and run `docker compose config` |
+| `dockgen info` | Print current `.dockgen.json` as formatted JSON |
 
 The `-w / --workspace` flag sets the target directory (default: current directory).
 
@@ -163,7 +163,7 @@ The `-w / --workspace` flag sets the target directory (default: current director
 **ROS 2 Humble with Wayland and NVIDIA GPU:**
 
 ```bash
-dct new
+dockgen new
 # step 2: humble
 # step 4a: nvidia
 # step 4b: wayland   (or press Enter — auto-detected if WAYLAND_DISPLAY is set)
@@ -173,13 +173,13 @@ dct new
 **Add GPU to an existing config without re-running the full wizard:**
 
 ```bash
-dct add gpu
+dockgen add gpu
 ```
 
 **Mount a dataset directory:**
 
 ```bash
-dct add volume /datasets:/datasets:ro
+dockgen add volume /datasets:/datasets:ro
 ```
 
 **Launch the container:**
@@ -202,12 +202,12 @@ Open the workspace folder in VS Code and choose
 Edit answers and regenerate all output files:
 
 ```bash
-dct config
+dockgen config
 ```
 
-All output files are always regenerated from `.dct.json` — never edit
+All output files are always regenerated from `.dockgen.json` — never edit
 `compose.yml` or `devcontainer.json` directly, as your changes will be
-overwritten on the next `dct config` run.
+overwritten on the next `dockgen config` run.
 
 ---
 
@@ -216,35 +216,35 @@ overwritten on the next `dct config` run.
 ### If installed via pipx
 
 ```bash
-pipx uninstall dct
+pipx uninstall dockgen
 ```
 
 ### If installed via pip
 
 ```bash
-pip uninstall dct
+pip uninstall dockgen
 # or, on externally-managed distros:
-pip uninstall --break-system-packages dct
+pip uninstall --break-system-packages dockgen
 ```
 
 ### Remove completion and man page
 
 ```bash
-rm -f ~/.local/share/bash-completion/completions/dct
-rm -f ~/.local/share/man/man1/dct.1 ~/.local/share/man/man1/dct.1.gz
+rm -f ~/.local/share/bash-completion/completions/dockgen
+rm -f ~/.local/share/man/man1/dockgen.1 ~/.local/share/man/man1/dockgen.1.gz
 ```
 
 ### System-wide uninstall
 
 ```bash
-sudo pip uninstall dct
-sudo rm -f /etc/bash_completion.d/dct
-sudo rm -f /usr/local/share/man/man1/dct.1 /usr/local/share/man/man1/dct.1.gz
+sudo pip uninstall dockgen
+sudo rm -f /etc/bash_completion.d/dockgen
+sudo rm -f /usr/local/share/man/man1/dockgen.1 /usr/local/share/man/man1/dockgen.1.gz
 ```
 
 ### Remove generated files from a project
 
 ```bash
-rm -f .dct.json
+rm -f .dockgen.json
 rm -rf docker/ .devcontainer/
 ```

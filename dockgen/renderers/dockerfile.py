@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from dct import ros
+from dockgen import ros
 
 
 def render(answers, out_dir):

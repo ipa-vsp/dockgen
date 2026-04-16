@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-CONFIG_FILE = ".dct.json"
+CONFIG_FILE = ".dockgen.json"
 SCHEMA_VERSION = 1
 
 

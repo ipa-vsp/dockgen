@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from dct.renderers import dockerfile as df
+from dockgen.renderers import dockerfile as df
 
 
 def render(answers, workspace):

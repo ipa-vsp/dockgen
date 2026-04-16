@@ -2,16 +2,17 @@ import os
 import sys
 from pathlib import Path
 
-from dct.probes import display as display_probe
-from dct.probes import gpu as gpu_probe
-from dct.probes import vscode as vscode_probe
-from dct.ros import ROS_BASE_IMAGES
+from dockgen.probes import display as display_probe
+from dockgen.probes import gpu as gpu_probe
+from dockgen.probes import vscode as vscode_probe
+from dockgen.ros import ROS_BASE_IMAGES
 
 
 def run(defaults=None):
     d = defaults or {}
     a = {}
     try:
+        _step_0_container_name(a, d)
         _step_1_output(a, d)
         _step_2_ros(a, d)
         _step_3_base_image(a, d)
@@ -24,7 +25,6 @@ def run(defaults=None):
         _step_7_startup(a, d)
         _step_8_devcontainer(a, d)
         _step_9_advanced(a, d)
-        _step_10_service_name(a, d)
     except (KeyboardInterrupt, EOFError):
         print("\naborted.", file=sys.stderr)
         sys.exit(130)
@@ -146,6 +146,12 @@ def _detect_tz():
 
 # ---------- steps ----------
 
+def _step_0_container_name(a, d):
+    _section("Container name")
+    default = d.get("service_name") or Path(os.getcwd()).name or "dev"
+    a["service_name"] = _ask("Container / service name?", default=default)
+
+
 def _step_1_output(a, d):
     _section("Output format")
     a["output_format"] = _ask(
@@ -214,9 +220,10 @@ def _step_4b_display(a, d):
         print("  no DISPLAY or WAYLAND_DISPLAY in the environment")
     else:
         print(f"  detected: {detected}")
+    display_default = d.get("display") or (detected if detected != "none" else "x11")
     a["display"] = _ask(
         "GUI forwarding?",
-        default=d.get("display", detected),
+        default=display_default,
         choices=["none", "x11", "wayland", "vnc"],
     )
     if a["display"] == "vnc":
@@ -238,7 +245,7 @@ def _step_4c_network(a, d):
     if a["network"] == "custom":
         a["network_name"] = _ask(
             "Custom network name?",
-            default=d.get("network_name", "dct_net"),
+            default=d.get("network_name", "dockgen_net"),
         )
     else:
         a["network_name"] = d.get("network_name", "")
@@ -317,8 +324,3 @@ def _step_9_advanced(a, d):
     )
     a["cap_add"] = _ask_list("Linux capabilities to add", d.get("cap_add", []))
     a["cap_drop"] = _ask_list("Linux capabilities to drop", d.get("cap_drop", []))
-
-
-def _step_10_service_name(a, d):
-    default = d.get("service_name") or Path(os.getcwd()).name or "dev"
-    a["service_name"] = default

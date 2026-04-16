@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — install dct to ~/.local (default) or system-wide (with --system)
+# install.sh — install dockgen to ~/.local (default) or system-wide (with --system)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -52,7 +52,7 @@ _install_package() {
 }
 
 _install_package
-echo "dct package installed ✓"
+echo "dockgen package installed ✓"
 
 # ── bash completion ──────────────────────────────────────────────────────────
 if [[ $SYSTEM -eq 1 ]]; then
@@ -64,21 +64,21 @@ else
 fi
 
 if [[ -d "$COMP_DIR" ]] || mkdir -p "$COMP_DIR" 2>/dev/null; then
-    install -m 644 completions/dct.bash "$COMP_DIR/dct"
-    echo "bash completion → $COMP_DIR/dct ✓"
+    install -m 644 completions/dockgen.bash "$COMP_DIR/dockgen"
+    echo "bash completion → $COMP_DIR/dockgen ✓"
 else
     echo "note: could not write completion to $COMP_DIR; skipping"
 fi
 
 # ── man page ─────────────────────────────────────────────────────────────────
 if mkdir -p "$MAN_DIR" 2>/dev/null; then
-    install -m 644 man/dct.1 "$MAN_DIR/dct.1"
+    install -m 644 man/dockgen.1 "$MAN_DIR/dockgen.1"
     # compress if gzip is available
     if command -v gzip &>/dev/null; then
-        gzip -f "$MAN_DIR/dct.1"
-        echo "man page     → $MAN_DIR/dct.1.gz ✓"
+        gzip -f "$MAN_DIR/dockgen.1"
+        echo "man page     → $MAN_DIR/dockgen.1.gz ✓"
     else
-        echo "man page     → $MAN_DIR/dct.1 ✓"
+        echo "man page     → $MAN_DIR/dockgen.1 ✓"
     fi
 else
     echo "note: could not write man page to $MAN_DIR; skipping"
@@ -93,4 +93,4 @@ if [[ $SYSTEM -eq 0 ]] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
 fi
 
 echo ""
-echo "Done. Run: dct --help"
+echo "Done. Run: dockgen --help"

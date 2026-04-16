@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from dct.renderers import dockerfile as df
+from dockgen.renderers import dockerfile as df
 
 
 def render(answers, workspace):
@@ -51,7 +51,7 @@ def _compose(a):
         L.append("    network_mode: host")
     elif a.get("network") == "custom":
         L.append("    networks:")
-        L.append(f"      - {a.get('network_name') or 'dct_net'}")
+        L.append(f"      - {a.get('network_name') or 'dockgen_net'}")
 
     if a.get("ipc_host"):
         L.append("    ipc: host")
@@ -98,7 +98,7 @@ def _compose(a):
     if a.get("network") == "custom":
         L.append("")
         L.append("networks:")
-        L.append(f"  {a.get('network_name') or 'dct_net'}:")
+        L.append(f"  {a.get('network_name') or 'dockgen_net'}:")
         L.append("    driver: bridge")
 
     return "\n".join(L) + "\n"

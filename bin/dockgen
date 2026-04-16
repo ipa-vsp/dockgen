@@ -7,6 +7,6 @@ REPO = os.path.dirname(HERE)
 if REPO not in sys.path:
     sys.path.insert(0, REPO)
 
-from dct.cli import main  # noqa: E402
+from dockgen.cli import main  # noqa: E402
 
 raise SystemExit(main())

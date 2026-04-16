@@ -1,25 +1,25 @@
-.TH DCT 1 "2026-04" "dct 0.1.0" "Docker Container Tool"
+.TH DOCKGEN 1 "2026-04" "dockgen 0.1.0" "dockgen - Docker Generator"
 .
 .SH NAME
-dct \- Docker Container Tool for ROS and general development
+dockgen \- Docker Compose and devcontainer generator for ROS and general development
 .
 .SH SYNOPSIS
-.B dct
+.B dockgen
 .RB [ \-w
 .IR workspace ]
 .I command
 .RI [ args ]
 .
 .SH DESCRIPTION
-.B dct
+.B dockgen
 is an interactive wizard that generates Docker Compose and VS\~Code
 devcontainer configurations for ROS and general development environments.
 Answers are persisted in
-.I .dct.json
+.I .dockgen.json
 so that
-.B dct\~config
+.B dockgen\~config
 can re-run with your previous choices as defaults, and
-.B dct\~add
+.B dockgen\~add
 can patch a single field without touching the rest.
 .
 .SH COMMANDS
@@ -29,12 +29,12 @@ Run the full nine-step wizard from scratch and write output files.
 Pass
 .B \-\-force
 to overwrite an existing
-.IR .dct.json .
+.IR .dockgen.json .
 .
 .TP
 .B config
 Re-run the wizard over an existing
-.I .dct.json
+.I .dockgen.json
 , using previous answers as defaults.
 .
 .TP
@@ -72,7 +72,7 @@ is on
 .TP
 .B info
 Print the current
-.I .dct.json
+.I .dockgen.json
 as formatted JSON.
 .
 .SH OPTIONS
@@ -83,9 +83,9 @@ All paths are resolved relative to this directory.
 .
 .SH FILES
 .TP
-.I .dct.json
+.I .dockgen.json
 Source-of-truth configuration. Re-generate all output files by running
-.BR "dct config" .
+.BR "dockgen config" .
 .TP
 .I docker/compose.yml
 Generated Docker Compose service definition.
@@ -120,7 +120,7 @@ Generate a ROS\~2 Humble workspace with host networking and Wayland:
 .PP
 .RS
 .nf
-dct new
+dockgen new
 # choose: ros_distro=humble, display=wayland, network=host
 .fi
 .RE
@@ -129,7 +129,7 @@ Add an NVIDIA GPU to an existing configuration:
 .PP
 .RS
 .nf
-dct add gpu
+dockgen add gpu
 .fi
 .RE
 .PP
@@ -137,7 +137,7 @@ Mount a dataset directory:
 .PP
 .RS
 .nf
-dct add volume /datasets:/datasets:ro
+dockgen add volume /datasets:/datasets:ro
 .fi
 .RE
 .PP
@@ -145,7 +145,7 @@ Validate after editing compose.yml by hand:
 .PP
 .RS
 .nf
-dct validate
+dockgen validate
 .fi
 .RE
 .

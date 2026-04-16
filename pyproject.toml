@@ -1,16 +1,25 @@
 [build-system]
 requires = ["setuptools>=61"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "dct"
+name = "dockgen"
 version = "0.1.0"
-description = "Docker Container Tool for ROS and general development"
+description = "Docker Compose and devcontainer generator for ROS and general development"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "ipa-vsp", email = "prachandabhanu@gmail.com" }]
+keywords = ["docker", "ros", "devcontainer", "compose", "generator"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+]
 requires-python = ">=3.8"
 
 [project.scripts]
-dct = "dct.cli:main"
+dockgen = "dockgen.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["dct*"]
+include = ["dockgen*"]
